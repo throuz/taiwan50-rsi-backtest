@@ -1,10 +1,10 @@
 import { Presets, SingleBar } from "cli-progress";
 import {
   RSI_PERIOD_SETTING,
-  RSI_LOWER_LIMIT_SETTING,
+  RSI_SELL_LEVEL_SETTING,
   FEE_RATE,
   INITIAL_FUNDING,
-  RSI_UPPER_LIMIT_SETTING
+  RSI_BUY_LEVEL_SETTING
 } from "../configs/config.js";
 import { getCachedKlineData } from "./cached-data.js";
 import { getSignal } from "./signal.js";
@@ -61,8 +61,8 @@ const logTradeResult = ({
 export const getBacktestResult = async ({
   shouldLogResults,
   rsiPeriod,
-  rsiUpperLimit,
-  rsiLowerLimit
+  rsiBuyLevel,
+  rsiSellLevel
 }) => {
   let fund = INITIAL_FUNDING;
   let positionType = "NONE";
@@ -76,8 +76,8 @@ export const getBacktestResult = async ({
       positionType,
       index: i,
       rsiPeriod,
-      rsiUpperLimit,
-      rsiLowerLimit
+      rsiBuyLevel,
+      rsiSellLevel
     });
     const openLong = () => {
       openPrice = curKline.openPrice;
@@ -123,8 +123,8 @@ export const getBacktestResult = async ({
   return {
     fund,
     rsiPeriod,
-    rsiUpperLimit,
-    rsiLowerLimit
+    rsiBuyLevel,
+    rsiSellLevel
   };
 };
 
@@ -136,19 +136,19 @@ const getSettings = () => {
     rsiPeriod += 1
   ) {
     for (
-      let rsiUpperLimit = RSI_UPPER_LIMIT_SETTING.min;
-      rsiUpperLimit <= RSI_UPPER_LIMIT_SETTING.max;
-      rsiUpperLimit += 1
+      let rsiBuyLevel = RSI_BUY_LEVEL_SETTING.min;
+      rsiBuyLevel <= RSI_BUY_LEVEL_SETTING.max;
+      rsiBuyLevel += 1
     ) {
       for (
-        let rsiLowerLimit = RSI_LOWER_LIMIT_SETTING.min;
-        rsiLowerLimit <= RSI_LOWER_LIMIT_SETTING.max;
-        rsiLowerLimit += 1
+        let rsiSellLevel = RSI_SELL_LEVEL_SETTING.min;
+        rsiSellLevel <= RSI_SELL_LEVEL_SETTING.max;
+        rsiSellLevel += 1
       ) {
         settings.push({
           rsiPeriod,
-          rsiUpperLimit,
-          rsiLowerLimit
+          rsiBuyLevel,
+          rsiSellLevel
         });
       }
     }
@@ -165,12 +165,12 @@ export const getBestBacktestResult = async () => {
   let bestBacktestResult = { fund: 0 };
 
   for (const setting of settings) {
-    const { rsiPeriod, rsiUpperLimit, rsiLowerLimit } = setting;
+    const { rsiPeriod, rsiBuyLevel, rsiSellLevel } = setting;
     const backtestResult = await getBacktestResult({
       shouldLogResults: false,
       rsiPeriod,
-      rsiUpperLimit,
-      rsiLowerLimit
+      rsiBuyLevel,
+      rsiSellLevel
     });
     if (backtestResult && backtestResult.fund > bestBacktestResult.fund) {
       bestBacktestResult = backtestResult;

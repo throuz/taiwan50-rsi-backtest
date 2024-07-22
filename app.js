@@ -10,11 +10,11 @@ const sendTelegramMessage = async (message) => {
   bot.sendMessage(TELEGRAM_CHAT_ID, message);
 };
 
-const getSignal = ({ rsiUpperLimit, rsiLowerLimit, curRsi }) => {
-  if (curRsi > rsiUpperLimit) {
+const getSignal = ({ rsiBuyLevel, rsiSellLevel, curRsi }) => {
+  if (curRsi > rsiBuyLevel) {
     return "BUY";
   }
-  if (curRsi < rsiLowerLimit) {
+  if (curRsi < rsiSellLevel) {
     return "SELL";
   }
   return "NONE";
@@ -26,12 +26,12 @@ const execute = async () => {
     console.log(dateTime);
 
     const bestBacktestResult = await getBestBacktestResult();
-    const { rsiPeriod, rsiUpperLimit, rsiLowerLimit } = bestBacktestResult;
+    const { rsiPeriod, rsiBuyLevel, rsiSellLevel } = bestBacktestResult;
     await getBacktestResult({
       shouldLogResults: true,
       rsiPeriod,
-      rsiUpperLimit,
-      rsiLowerLimit
+      rsiBuyLevel,
+      rsiSellLevel
     });
     console.log(bestBacktestResult);
 
@@ -40,13 +40,13 @@ const execute = async () => {
     const curRsi = rsiData[rsiData.length - 1];
     console.log("Current RSI", curRsi);
 
-    const signal = getSignal({ rsiUpperLimit, rsiLowerLimit, curRsi });
+    const signal = getSignal({ rsiBuyLevel, rsiSellLevel, curRsi });
     console.log("Signal:", signal);
 
     const message = `Execution at ${dateTime}:
     RSI Period: ${rsiPeriod}
-    RSI Upper Limit: ${rsiUpperLimit}
-    RSI Lower Limit: ${rsiLowerLimit}
+    RSI Buy Level: ${rsiBuyLevel}
+    RSI Sell Level: ${rsiSellLevel}
     Current RSI: ${curRsi}
     Signal: ${signal}`;
     await sendTelegramMessage(message);
