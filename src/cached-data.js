@@ -31,8 +31,6 @@ export const getCachedRsiData = async () => {
   if (shouldGetLatestRsiData()) {
     const cachedKlineData = await getCachedKlineData();
     const values = cachedKlineData.map((kline) => kline.closePrice);
-    const timestamp = cachedKlineData[cachedKlineData.length - 1].closeTime;
-    cachedRsiData.set("timestamp", timestamp);
     for (
       let period = RSI_PERIOD_SETTING.min;
       period <= RSI_PERIOD_SETTING.max;
