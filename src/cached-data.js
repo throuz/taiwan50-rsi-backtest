@@ -2,19 +2,20 @@ import { getKlineData } from "./kline.js";
 import { RSI_PERIOD_SETTING } from "../configs/config.js";
 import { rsi } from "technicalindicators";
 
+let cachedTimestamp = null;
 let cachedKlineData = [];
 let cachedRsiData = new Map();
 
 const shouldGetLatestKlineData = (data) => {
   const noCachedData = data.length === 0;
-  const isCachedDataExpired =
-    data.length > 0 && Date.now() > data[data.length - 1].closeTime;
+  const isCachedDataExpired = Date.now() > cachedTimestamp;
   return noCachedData || isCachedDataExpired;
 };
 
 export const getCachedKlineData = async () => {
   if (shouldGetLatestKlineData(cachedKlineData)) {
     const klineData = await getKlineData();
+    cachedTimestamp = Date.now() + 60 * 60 * 1000;
     cachedKlineData = klineData;
   }
   return cachedKlineData;
@@ -22,7 +23,7 @@ export const getCachedKlineData = async () => {
 
 const shouldGetLatestRsiData = () => {
   const noCachedData = cachedRsiData.size === 0;
-  const isCachedDataExpired = Date.now() > cachedRsiData.get("timestamp");
+  const isCachedDataExpired = Date.now() > cachedTimestamp;
   return noCachedData || isCachedDataExpired;
 };
 
