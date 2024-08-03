@@ -1,15 +1,10 @@
-import { getCachedRsiData } from "./cached-data.js";
-
 export const getSignal = async ({
   positionType,
-  index,
-  rsiPeriod,
+  isProfit,
+  preRsi,
   rsiBuyLevel,
   rsiSellLevel
 }) => {
-  const cachedRsiData = await getCachedRsiData();
-  const rsiData = cachedRsiData.get(rsiPeriod);
-  const preRsi = rsiData[index - 1];
   // OPEN_LONG
   if (positionType === "NONE") {
     if (preRsi > rsiBuyLevel) {
@@ -17,7 +12,7 @@ export const getSignal = async ({
     }
   }
   // CLOSE_LONG
-  if (positionType === "LONG") {
+  if (positionType === "LONG" && isProfit) {
     if (preRsi < rsiSellLevel) {
       return "CLOSE_LONG";
     }

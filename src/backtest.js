@@ -6,7 +6,7 @@ import {
   INITIAL_FUNDING,
   RSI_BUY_LEVEL_SETTING
 } from "../configs/config.js";
-import { getCachedKlineData } from "./cached-data.js";
+import { getCachedKlineData, getCachedRsiData } from "./cached-data.js";
 import { getSignal } from "./signal.js";
 
 const getReadableTime = (timestamp) => {
@@ -70,12 +70,19 @@ export const getBacktestResult = async ({
   let openTimestamp = null;
   let openPrice = null;
   const cachedKlineData = await getCachedKlineData();
-  for (let i = RSI_PERIOD_SETTING.max + 1; i < cachedKlineData.length; i++) {
+  const cachedRsiData = await getCachedRsiData();
+  const rsiData = cachedRsiData.get(rsiPeriod);
+  for (let i = 1; i < cachedKlineData.length; i++) {
     const curKline = cachedKlineData[i];
+    const preRsi = rsiData[i - 1];
+    if (preRsi === null) {
+      continue;
+    }
+    const isProfit = curKline.openPrice > openPrice;
     const signal = await getSignal({
       positionType,
-      index: i,
-      rsiPeriod,
+      isProfit,
+      preRsi,
       rsiBuyLevel,
       rsiSellLevel
     });
