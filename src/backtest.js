@@ -123,12 +123,10 @@ export const getBacktestResult = async ({
     if (signal === "CLOSE_LONG") {
       closeLong();
     }
-    if (positionType === "LONG" && i === cachedKlineData.length - 1) {
-      closeLong();
-    }
   }
   return {
     fund,
+    positionType,
     rsiPeriod,
     rsiBuyLevel,
     rsiSellLevel

@@ -10,16 +10,6 @@ const sendTelegramMessage = async (message) => {
   bot.sendMessage(TELEGRAM_CHAT_ID, message);
 };
 
-const getSignal = ({ rsiBuyLevel, rsiSellLevel, curRsi }) => {
-  if (curRsi > rsiBuyLevel) {
-    return "BUY";
-  }
-  if (curRsi < rsiSellLevel) {
-    return "SELL";
-  }
-  return "NONE";
-};
-
 const execute = async () => {
   try {
     const dateTime = new Date().toLocaleString();
@@ -39,9 +29,6 @@ const execute = async () => {
     const rsiData = cachedRsiData.get(rsiPeriod);
     const curRsi = rsiData[rsiData.length - 1];
     console.log("Current RSI", curRsi);
-
-    const signal = getSignal({ rsiBuyLevel, rsiSellLevel, curRsi });
-    console.log("Signal:", signal);
 
     const message = `Execution at ${dateTime}:
     RSI Period: ${rsiPeriod}
