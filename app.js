@@ -34,8 +34,7 @@ const execute = async () => {
     RSI Period: ${rsiPeriod}
     RSI Buy Level: ${rsiBuyLevel}
     RSI Sell Level: ${rsiSellLevel}
-    Current RSI: ${curRsi}
-    Signal: ${signal}`;
+    Current RSI: ${curRsi}`;
     await sendTelegramMessage(message);
 
     console.log(
